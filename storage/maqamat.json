@@ -1,0 +1,38 @@
+[
+    {
+        "id": 1,
+        "name": "Bayati",
+        "description": "Spiritual and warm maqam.",
+        "links": [
+            "https://example.com/bayati1",
+            "https://example.com/bayati2"
+        ]
+    },
+    {
+        "id": 2,
+        "name": "Hijaz",
+        "description": "Majestic and solemn maqam.",
+        "links": [
+            "https://example.com/hijaz1",
+            "https://example.com/hijaz2"
+        ]
+    },
+    {
+        "id": 3,
+        "name": "Saba",
+        "description": "Mysterious and emotional maqam.",
+        "links": [
+            "https://example.com/saba1",
+            "https://example.com/saba2"
+        ]
+    },
+    {
+        "id": 4,
+        "name": "Hijaz",
+        "description": "Majestic and solemn maqam.",
+        "links": [
+            "https://example.com/hijaz1",
+            "https://example.com/hijaz2"
+        ]
+    }
+]

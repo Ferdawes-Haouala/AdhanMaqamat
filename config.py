@@ -1,0 +1,2 @@
+#SQLALCHEMY_DATABASE_URI = "sqlite:///instance/data.db"
+#SQLALCHEMY_TRACK_MODIFICATIONS = False
