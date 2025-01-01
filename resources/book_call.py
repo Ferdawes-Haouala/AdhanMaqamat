@@ -1,56 +1,64 @@
+from flask.views import MethodView
+from flask_smorest import Blueprint
 from flask_restful import Resource, reqparse
 from models.booking import Booking
 from db import db
 from schemas import BookingSchema
 
-booking_schema = BookingSchema()
+
+blp = Blueprint("BookCall", "book_call", description="Operations for booking calls")
 
 
-class BookCall(Resource):
-    def post(self):
-        parser = reqparse.RequestParser()
-        parser.add_argument("name", type=str, required=True, help="Name is required.")
-        parser.add_argument("email", type=str, required=True, help="Email is required.")
-        parser.add_argument("topic", type=str, required=True, help="Topic is required.")
-        parser.add_argument("datetime", type=str, required=True, help="Date and time are required.")
-        data = parser.parse_args()
-
+@blp.route("/book-call")
+class BookCall(MethodView):
+    @blp.arguments(BookingSchema)
+    @blp.response(201, BookingSchema)
+    def post(self, booking_data):
+        """Book a call."""
+        # Generate a unique Google Meet link
         meet_link = f"https://meet.google.com/session-{Booking.query.count() + 1}"
+        booking_data["meet_link"] = meet_link
 
-        new_booking = Booking(
-            name=data["name"],
-            email=data["email"],
-            topic=data["topic"],
-            datetime=data["datetime"],
-            meet_link=meet_link,
-        )
+        # Create a new booking
+        new_booking = Booking(**booking_data)
         db.session.add(new_booking)
         db.session.commit()
 
-        return {
-            "message": "Call booked successfully.",
-            "booking": {
-                "id": new_booking.id,
-                "name": new_booking.name,
-                "email": new_booking.email,
-                "topic": new_booking.topic,
-                "datetime": new_booking.datetime,
-                "meet_link": new_booking.meet_link,
-            },
-        }, 201
+        return new_booking
 
 
-class BookingDetail(Resource):
+@blp.route("/book-call/<int:booking_id>")
+class BookingDetail(MethodView):
+    @blp.response(200, BookingSchema)
     def get(self, booking_id):
+        """Retrieve booking details by ID."""
         booking = Booking.query.get(booking_id)
         if not booking:
             return {"message": "Booking not found."}, 404
 
-        return {
-            "id": booking.id,
-            "name": booking.name,
-            "email": booking.email,
-            "topic": booking.topic,
-            "datetime": booking.datetime,
-            "meet_link": booking.meet_link,
-        }, 200
+        return booking
+    
+    @blp.arguments(BookingSchema(partial=True))
+    @blp.response(200, BookingSchema)
+    def put(self, booking_data, booking_id):
+        """Update booking details by ID."""
+        booking = Booking.query.get(booking_id)
+        if not booking:
+            return {"message": "Booking not found."}, 404
+
+        for key, value in booking_data.items():
+            setattr(booking, key, value)
+
+        db.session.commit()
+        return booking
+
+    @blp.response(200)
+    def delete(self, booking_id):
+        """Delete a booking by ID."""
+        booking = Booking.query.get(booking_id)
+        if not booking:
+            return {"message": "Booking not found."}, 404
+
+        db.session.delete(booking)
+        db.session.commit()
+        return {"message": "Booking deleted successfully."}
