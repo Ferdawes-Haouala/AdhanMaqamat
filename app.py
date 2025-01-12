@@ -5,6 +5,7 @@ from flask_smorest import Api
 from db import db
 from resources.user import  blp as UserBlueprint
 from resources.maqamat import blp as MaqamatBlueprint
+from resources.maqam_details import blp as MaqamDetailsBlueprint
 from resources.book_call import blp as BookCallBlueprint
 from flask_cors import CORS
 from flasgger import Swagger
@@ -35,6 +36,7 @@ def create_app():
     api = Api(app)
     api.register_blueprint(UserBlueprint)
     api.register_blueprint(MaqamatBlueprint)
+    api.register_blueprint(MaqamDetailsBlueprint)
     api.register_blueprint(BookCallBlueprint)
     
     
